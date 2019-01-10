@@ -1,7 +1,27 @@
-# Docker Statsd
+# Statsd + Cloudwatch Docker image
 
-A Docker container running statsd, using Stackdriver as backend.
+A Docker container running statsd, using AWS Cloudwatch as backend.
 
-# Usage
-To run the container execute
-    docker run -e "STACKDRIVER_API_KEY=your_key" -e "SOURCE=stats_source" -p 8125:8125/udp fiunchinho/docker-statsd
+```
+docker swarm init
+
+docker network create -d overlay statsd
+
+docker service create \
+    --name statsd \
+    --network statsd \
+    -p 8125:8125/udp \
+    --replicas 1 \
+    -e "AWS_ACCESS_KEY_ID=YOUR_KEY" \
+    -e "AWS_SECRET_ACCESS_KEY=YOUR_SECRET" \
+    stefanoverna/statsd-cloudwatch:1.0
+
+docker service create \
+    --name statsd-http-proxy \
+    -p 80:80 \
+    --network statsd \
+    sokil/statsd-http-proxy:latest \
+    --verbose \
+    --statsd-host=statsd
+```
+
