@@ -22,6 +22,6 @@
   "homepage": "https://github.com/bazilio91/statsd-redis-backend#readme",
   "dependencies": {
     "lodash": "^3.9.3",
-    "redis": "^0.12.1"
+    "redis": "2.8.0"
   }
 }
