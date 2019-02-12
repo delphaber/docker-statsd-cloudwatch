@@ -8,6 +8,8 @@ RUN git clone https://github.com/etsy/statsd.git statsd
 RUN cd statsd && npm install aws-cloudwatch-statsd-backend
 ADD config.js ./statsd/config.js
 ADD backends/redis ./statsd/backends/redis
+RUN cd statsd/backends/redis && npm install
+
 
 EXPOSE 8125:8125/udp
 EXPOSE 8126:8126/tcp
