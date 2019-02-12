@@ -6,10 +6,8 @@ exports.init = function instrumental_init(startup_time, config, events) {
   var redisStats = {};
 
   var redisConfig = {
-    host: 'localhost',
-    port: 6379,
-    db: 0,
-    regexp: null
+    connect_url: 'redis://localhost:6379',
+    prefix_whitelist: ''
   };
 
   if (config.redis) {
@@ -20,22 +18,24 @@ exports.init = function instrumental_init(startup_time, config, events) {
     redisConfig.regexp = new RegExp(redisConfig.regexp);
   }
 
-  var client = redis.createClient(redisConfig.port, redisConfig.host);
-  client.select(redisConfig.db);
+  var client = redis.createClient({
+    url: 'redis://host.docker.internal:6379'
+  });
 
   redisStats.last_flush = startup_time;
   redisStats.last_exception = startup_time;
 
 
   function flush(timeStamp, metrics) {
+    prefix_whitelist = redisConfig.prefix_whitelist.replace(/\s+/g, '').split(',')
     _.each(metrics.counters, function (value, key) {
-      if (redisConfig.regexp && !redisConfig.regexp.test(key)) {
+      key = key.split(".")
+      prefix = key[0]
+      if (key.length > 1 && !prefix_whitelist.indexOf(prefix) == -1) {
         return;
       }
-
-      key = key.split(".")
       site_id = parseInt(key[1].replace(/[^\d.]/g, ''));
-      client.hincrby(key[0], site_id, value, function (err, res) {
+      client.hincrby(prefix, site_id, value, function (err, res) {
         if (err) {
           redisStats.last_exception = timeStamp;
           console.error(err);

@@ -13,10 +13,8 @@
       processKeyForNamespace: process.env.CLOUDWATCH_PROCESS_KEY_FOR_NAMESPACE == 'true',
     },
     redis: {
-      host: 'host.docker.internal',
-      port: 6379,
-      db: 0,
-      regexp: /^c(ma|da)_/g
+      connect_url: process.env.REDIS_URL || 'redis://host.docker.internal:6379/0',
+      prefix_whitelist: process.env.REDIS_PREFIX_WHITELIST || 'cma_api_calls, cda_api_calls'
     }
   };
 })()
