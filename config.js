@@ -1,7 +1,7 @@
 (function() {
   return {
     port: parseInt(process.env.STATSD_PORT) || 8125,
-    backends: ["./backends/console", "aws-cloudwatch-statsd-backend"],
+    backends: ["./backends/console", "aws-cloudwatch-statsd-backend", "./backends/redis"],
     debug: process.env.STATSD_DEBUG == 'true',
     flushInterval: parseInt(process.env.STATSD_FLUSH_INTERVAL) || 5000,
     cloudwatch: {
@@ -11,6 +11,12 @@
       namespace: process.env.CLOUDWATCH_NAMESPACE,
       metricName: process.env.CLOUDWATCH_METRIC_NAME,
       processKeyForNamespace: process.env.CLOUDWATCH_PROCESS_KEY_FOR_NAMESPACE == 'true',
+    },
+    redis: {
+      host: 'host.docker.internal',
+      port: 6379,
+      db: 0,
+      regexp: /^c(ma|da)_/g
     }
   };
 })()

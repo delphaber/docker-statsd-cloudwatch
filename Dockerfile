@@ -7,6 +7,7 @@ RUN apt-get -y --force-yes install git nodejs npm
 RUN git clone https://github.com/etsy/statsd.git statsd
 RUN cd statsd && npm install aws-cloudwatch-statsd-backend
 ADD config.js ./statsd/config.js
+ADD backends/redis ./statsd/backends/redis
 
 EXPOSE 8125:8125/udp
 EXPOSE 8126:8126/tcp
