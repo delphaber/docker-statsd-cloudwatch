@@ -4,6 +4,7 @@
     backends: ["./backends/console", "aws-cloudwatch-statsd-backend", "./backends/redis"],
     debug: process.env.STATSD_DEBUG == 'true',
     flushInterval: parseInt(process.env.STATSD_FLUSH_INTERVAL) || 5000,
+    deleteIdleStats: true,
     cloudwatch: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'key_id',
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'secret',
