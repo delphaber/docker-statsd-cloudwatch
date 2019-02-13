@@ -34,7 +34,7 @@ exports.init = function instrumental_init(startup_time, config, events) {
         return;
       }
       site_id = parseInt(key[1].replace(/[^\d.]/g, ''));
-      client.hincrby(prefix, site_id, value, function (err, res) {
+      client.hincrby('site_usages:' + prefix, site_id, value, function (err, res) {
         if (err) {
           redisStats.last_exception = timeStamp;
           console.error(err);
