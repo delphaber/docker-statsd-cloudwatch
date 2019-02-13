@@ -3,7 +3,7 @@
 
   return {
     port: parseInt(process.env.STATSD_PORT) || 8125,
-    backends: ["./backends/console", "cloudwatch-backend-for-statsd", "./backends/redis"],
+    backends: ["./backends/console", "./backends/cloudwatch", "./backends/redis"],
     debug: process.env.STATSD_DEBUG == 'true',
     flushInterval: parseInt(process.env.STATSD_FLUSH_INTERVAL) || 5000,
     deleteIdleStats: true,
@@ -14,7 +14,7 @@
       namespace: process.env.CLOUDWATCH_NAMESPACE,
       metricName: process.env.CLOUDWATCH_METRIC_NAME,
       processKeyForNamespace: process.env.CLOUDWATCH_PROCESS_KEY_FOR_NAMESPACE == 'true',
-      whitelist: process.env.CLOUDWATCH_WHITELIST.split(/\s*,\s*/g) || [],
+      whitelist: process.env.CLOUDWATCH_WHITELIST && process.env.CLOUDWATCH_WHITELIST.split(/\s*,\s*/g),
     },
     redis: {
       connect_url: process.env.REDIS_URL || 'redis://host.docker.internal:6379/0',
