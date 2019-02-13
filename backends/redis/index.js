@@ -27,6 +27,9 @@ exports.init = function instrumental_init(startup_time, config, events) {
     _.each(metrics.counters, function (value, key) {
       key = key.split(".")
       prefix = key[0]
+      if (key.length < 2) {
+        return;
+      }
       if (key.length > 1 && !prefix_whitelist.indexOf(prefix) == -1) {
         return;
       }
