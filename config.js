@@ -11,6 +11,8 @@
       namespace: process.env.CLOUDWATCH_NAMESPACE,
       metricName: process.env.CLOUDWATCH_METRIC_NAME,
       processKeyForNamespace: process.env.CLOUDWATCH_PROCESS_KEY_FOR_NAMESPACE == 'true',
+      whitelist: process.env.CLOUDWATCH_WHITELIST.replace(/\s+/g, '').split(',') || [],
+     
     },
     redis: {
       connect_url: process.env.REDIS_URL || 'redis://host.docker.internal:6379/0',
