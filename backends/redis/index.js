@@ -14,12 +14,8 @@ exports.init = function instrumental_init(startup_time, config, events) {
     _.extend(redisConfig, config.redis);
   }
 
-  if (redisConfig.regexp) {
-    redisConfig.regexp = new RegExp(redisConfig.regexp);
-  }
-
   var client = redis.createClient({
-    url: 'redis://host.docker.internal:6379'
+    url: redisConfig.connect_url
   });
 
   redisStats.last_flush = startup_time;
