@@ -31,7 +31,7 @@ exports.init = function instrumental_init(startup_time, config, events) {
         return;
       }
 
-      var siteId = parseInt(key[1].replace(/[^\d]/g, ''));
+      var siteId = key[1].replace(/site_/g, '');
 
       client.hincrby('site_usages:' + prefix, siteId, value, function (err, res) {
         if (err) {
