@@ -25,8 +25,8 @@ exports.init = function instrumental_init(startupTime, globalConfig, events) {
     let batchOp = client.batch();
 
     _.each(metrics.counters, function (count, key) {
-      // usage: curl -X POST '/count/assets_referral.site_XXXX.<URI-ENCODED-VALUE>' --data "value=1" -H "X-JWT-Token: ZZZZ"
-      // key = "cma_api_calls.site_XXXX.<URI-ENCODED-VALUE>" (metrics are counters)
+      // usage: curl -X POST '/count/assets_referral.site_XXXX.<BASE64-VALUE>' --data "value=1" -H "X-JWT-Token: ZZZZ"
+      // key = "cma_api_calls.site_XXXX.<BASE64-VALUE>" (metrics are counters)
 
       const chunks = key.split(".", 3);
 
@@ -45,7 +45,7 @@ exports.init = function instrumental_init(startupTime, globalConfig, events) {
       const set = config.redisKeyPrefix + prefix + ":" + siteId;
       touchedSets.add(set);
 
-      batchOp = batchOp.ZINCRBY(set, count, encodeURI(chunks[2]));
+      batchOp = batchOp.ZINCRBY(set, count, new Buffer(chunks[2], 'base64').toString('ascii'));
     });
 
     if (timestamp - lastTimestamp > config.pruneFrequency / 1000) {
