@@ -9,9 +9,13 @@ RUN apt-get -y --force-yes install git nodejs
 
 RUN git clone https://github.com/etsy/statsd.git statsd
 ADD config.js ./statsd/config.js
-ADD backends/redis ./statsd/backends/redis
+
+ADD backends/redisHash ./statsd/backends/redisHash
+ADD backends/redisSortedSet ./statsd/backends/redisSortedSet
 ADD backends/cloudwatch ./statsd/backends/cloudwatch
-RUN cd statsd/backends/redis && npm install
+
+RUN cd statsd/backends/redisHash && npm install
+RUN cd statsd/backends/redisSortedSet && npm install
 RUN cd statsd/backends/cloudwatch && npm install
 
 EXPOSE 8125:8125/udp

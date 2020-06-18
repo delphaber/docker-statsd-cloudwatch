@@ -1,48 +1,74 @@
-var _ = require('lodash');
-var redis = require('redis');
+const _ = require("lodash");
+const redis = require("redis");
 
 exports.init = function instrumental_init(startupTime, globalConfig, events) {
-  var config = {
-    connectUrl: 'redis://localhost:6379',
-    prefixWhitelist: ''
+  const config = {
+    connectUrl: "redis://localhost:6379",
+    prefixWhitelist: "",
+    keepTop: 100,
   };
 
   if (globalConfig.redisSortedSet) {
     _.extend(config, globalConfig.redisSortedSet);
   }
 
-  var client = redis.createClient({
-    url: config.connectUrl
+  const client = redis.createClient({
+    url: config.connectUrl,
   });
 
-  function flush(timeStamp, metrics) {
-    var prefixWhitelist = config.prefixWhitelist.split(/\s*,\s*/);
+  var prefixWhitelist = config.prefixWhitelist.split(/\s*,\s*/);
 
-    _.each(metrics.counters, function (value, key) {
-      // key = "cma_api_calls.site_XXXX" (metrics are counters)
+  let lastTimestamp = 0;
+  const touchedSets = new Set();
 
-      key = key.split(".")
+  events.on("flush", (timestamp, metrics) => {
+    let batchOp = client.batch();
 
-      if (key.length < 3) {
+    _.each(metrics.counters, function (count, key) {
+      // usage: curl -X POST '/count/assets_referral.site_XXXX.<URI-ENCODED-VALUE>' --data "value=1" -H "X-JWT-Token: ZZZZ"
+      // key = "cma_api_calls.site_XXXX.<URI-ENCODED-VALUE>" (metrics are counters)
+
+      const chunks = key.split(".", 3);
+
+      if (chunks.length < 3) {
         return;
       }
 
-      var prefix = key[0]
+      var prefix = chunks[0];
 
       if (prefixWhitelist.indexOf(prefix) === -1) {
         return;
       }
 
-      var siteId = key[1].replace(/site_/g, '');
+      var siteId = chunks[1].replace(/site_/g, "");
 
-      client.hincrby('site_usages:' + prefix, siteId, value, function (err, res) {
-        if (err) {
-          console.error(err);
-        }
-      });
+      const set = config.redisKeyPrefix + prefix + ":" + siteId;
+      touchedSets.add(set);
+
+      batchOp = batchOp.ZINCRBY(set, count, encodeURI(chunks[2]));
     });
-  }
 
-  events.on("flush", flush);
+    if (timestamp - lastTimestamp > config.pruneFrequency / 1000) {
+      lastTimestamp = timestamp;
+
+      console.log(`[REDIS SORTED SET] Pruning to keep top ${config.keepTop} results...`);
+
+      for (let set of touchedSets.values()) {
+        batchOp = batchOp.ZREMRANGEBYRANK(set, 0, -(config.keepTop + 1));
+      }
+      touchedSets.clear();
+    }
+
+    batchOp.exec((err, replies) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      console.log(
+        `[REDIS SORTED SET] Sent ${replies.length} commands successfully.`
+      );
+    });
+  });
   return true;
 };
