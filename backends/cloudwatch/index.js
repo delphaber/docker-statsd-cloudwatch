@@ -26,9 +26,6 @@ CloudwatchBackend.prototype.processKey = function(key) {
 }
 
 CloudwatchBackend.prototype.isBlacklisted = function(key) {
-  var blacklisted = false;
-
-
   if (this.config.whitelist && this.config.whitelist.length > 0 && this.config.whitelist.indexOf(key) >= 0) {
     return false;
   }
@@ -42,11 +39,8 @@ CloudwatchBackend.prototype.flush = function(timestamp, metrics) {
 
   console.log(new Date(timestamp*1000).toISOString());
 
-
   var counters = metrics.counters;
-  var gauges = metrics.gauges;
   var timers = metrics.timers;
-  var sets = metrics.sets;
 
   for (key in counters) {
     if (key.indexOf('statsd.') == 0)
@@ -58,7 +52,7 @@ CloudwatchBackend.prototype.flush = function(timestamp, metrics) {
 
     names = this.config.processKeyForNamespace ? this.processKey(key) : {};
     var namespace = this.config.namespace || names.namespace || "AwsCloudWatchStatsdBackend";
-    var metricName = this.config.metricName || names.metricName || key;
+    var metricName = names.metricName || key;
 
     cloudwatch.PutMetricData({
       MetricData : [{
@@ -92,19 +86,13 @@ CloudwatchBackend.prototype.flush = function(timestamp, metrics) {
       }
 
       var sum = min;
-      var mean = min;
-      var maxAtThreshold = max;
-
-      var message = "";
-
-      var key2;
 
       sum = cumulativeValues[count-1];
       mean = sum / count;
 
       names = this.config.processKeyForNamespace ? this.processKey(key) : {};
       var namespace = this.config.namespace || names.namespace || "AwsCloudWatchStatsdBackend";
-      var metricName = this.config.metricName || names.metricName || key;
+      var metricName = names.metricName || key;
 
       cloudwatch.PutMetricData({
         MetricData : [{
@@ -126,56 +114,6 @@ CloudwatchBackend.prototype.flush = function(timestamp, metrics) {
         });
 
     }
-  }
-
-  for (key in gauges) {
-    if (this.isBlacklisted(key)) {
-      continue;
-    }
-
-    names = this.config.processKeyForNamespace ? this.processKey(key) : {};
-    var namespace = this.config.namespace || names.namespace || "AwsCloudWatchStatsdBackend";
-    var metricName = this.config.metricName || names.metricName || key;
-
-    cloudwatch.PutMetricData({
-      MetricData : [{
-        MetricName : metricName,
-        Unit : 'None',
-        Timestamp: new Date(timestamp*1000).toISOString(),
-        Value : gauges[key]
-      }],
-      Namespace  : namespace
-    },
-      function(err, data) {
-        fmt.dump(err, 'Err');
-        fmt.dump(data, 'Data');
-      });
-  }
-
-  for (key in sets) {
-    if (this.isBlacklisted(key)) {
-      continue;
-    }
-    names = this.config.processKeyForNamespace ? this.processKey(key) : {};
-    var namespace = this.config.namespace || names.namespace || "AwsCloudWatchStatsdBackend";
-    var metricName = this.config.metricName || names.metricName || key;
-
-    cloudwatch.PutMetricData({
-      MetricData : [{
-        MetricName : metricName,
-        Unit : 'None',
-        Timestamp: new Date(timestamp*1000).toISOString(),
-        Value : sets[key].values().length
-      }],
-      Namespace  : namespace
-    },
-      function(err, data) {
-        fmt.dump(err, 'Err');
-        fmt.dump(data, 'Data');
-      });
-
-    statString += 'stats.sets.' + key + '.count ' + sets[key].values().length + ' ' + ts + "\n";
-    numStats += 1;
   }
 };
 

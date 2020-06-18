@@ -14,7 +14,6 @@
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'secret',
       region: process.env.AWS_REGION || 'EU_WEST_1',
       namespace: process.env.CLOUDWATCH_NAMESPACE,
-      metricName: process.env.CLOUDWATCH_METRIC_NAME,
       processKeyForNamespace: process.env.CLOUDWATCH_PROCESS_KEY_FOR_NAMESPACE !== 'false',
       whitelist: process.env.CLOUDWATCH_WHITELIST || 'cda-response_time,rails-status_error,rails-status_success',
     },

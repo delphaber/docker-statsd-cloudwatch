@@ -7,8 +7,6 @@ docker swarm init
 
 docker network create -d overlay statsd
 
-docker service rm statsd
-
 docker service create \
     --name statsd \
     --network statsd \
@@ -26,7 +24,7 @@ docker service create \
     gometric/statsd-http-proxy:latest \
     --verbose \
     --statsd-host=statsd \
-    --jwt-secret=ZZZ \
+    --jwt-secret=ZZZ
 ```
 
 Useful commands:
@@ -46,6 +44,9 @@ docker pull stefanoverna/statsd-cloudwatch:1.0
 
 # change/update image
 docker service update --image stefanoverna/statsd-cloudwatch:1.0 statsd
+
+# remove service
+docker service rm statsd
 
 # view logs
 docker service logs statsd -f --tail 100
