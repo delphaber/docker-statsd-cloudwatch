@@ -48,15 +48,20 @@
       prefixWhitelist:
         process.env.REDIS_SORTED_SET_PREFIX_WHITELIST ||
         [
-          "assets_referrer",
-          "assets_ip",
-          "assets_path",
-          "cda_referrer",
-          "cda_ip",
-          "cda_access_token_id",
-          "cma_request",
-          "cma_ip",
-          "cma_access_token_id",
+          "assets_referrer_bytes",
+          "assets_ip_bytes",
+          "assets_path_bytes",
+
+          "cda_referrer_requests",
+          "cda_ip_requests",
+          "cda_access_token_id_requests",
+          "cma_request_requests",
+          "cma_ip_requests",
+          "cma_access_token_id_requests",
+
+          "cda_referrer_bytes",
+          "cda_ip_bytes",
+          "cda_access_token_id_bytes",
         ].join(","),
       keepTop: parseInt(process.env.REDIS_SORTED_SET_KEEP_TOP) || 100,
       pruneFrequency:
