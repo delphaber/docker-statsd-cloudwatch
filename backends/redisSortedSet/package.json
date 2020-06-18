@@ -1,5 +1,5 @@
 {
-  "name": "statsd-redis-backend",
+  "name": "statsd-redis-sorted-set-stats-backend",
   "version": "0.0.1",
   "description": "Statsd redis backend",
   "main": "lib/index.js",

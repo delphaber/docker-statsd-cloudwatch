@@ -1,24 +1,26 @@
 var _ = require('lodash');
 var redis = require('redis');
 
-exports.init = function instrumental_init(startup_time, config, events) {
-  var redisConfig = {
-    connect_url: 'redis://localhost:6379',
+exports.init = function instrumental_init(startupTime, globalConfig, events) {
+  var config = {
+    connectUrl: 'redis://localhost:6379',
     prefixWhitelist: ''
   };
 
-  if (config.redis) {
-    _.extend(redisConfig, config.redis);
+  if (globalConfig.redisHash) {
+    _.extend(config, globalConfig.redisHash);
   }
 
   var client = redis.createClient({
-    url: redisConfig.connect_url
+    url: config.connectUrl
   });
 
   function flush(timeStamp, metrics) {
-    var prefixWhitelist = redisConfig.prefixWhitelist.split(/\s*,\s*/);
+    var prefixWhitelist = config.prefixWhitelist.split(/\s*,\s*/);
 
     _.each(metrics.counters, function (value, key) {
+      // key = "cma_api_calls.site_XXXX" (metrics are counters)
+
       key = key.split(".")
 
       if (key.length < 2) {

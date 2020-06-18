@@ -9,6 +9,8 @@ function CloudwatchBackend(startupTime, config, emitter){
   var self = this;
 
   config.cloudwatch.region = config.cloudwatch.region ? amazon[config.cloudwatch.region] : null;
+  config.cloudwatch.whitelist = config.cloudwatch.whitelist && config.cloudwatch.whitelist.split(/\s*,\s*/g);
+
   this.config = config.cloudwatch || {};
 
   // attach
