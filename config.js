@@ -39,6 +39,7 @@
           "cma_api_calls",
           "cda_api_calls",
           "cda_bandwidth",
+          "cma_bandwidth",
           "assets_bandwidth",
         ].join(","),
     },
@@ -53,15 +54,22 @@
           "assets_path_bytes",
 
           "cda_referrer_requests",
-          "cda_ip_requests",
-          "cda_access_token_id_requests",
-          "cma_request_requests",
-          "cma_ip_requests",
-          "cma_access_token_id_requests",
-
           "cda_referrer_bytes",
+
+          "cda_ip_requests",
           "cda_ip_bytes",
+
+          "cda_access_token_id_requests",
           "cda_access_token_id_bytes",
+
+          "cma_ip_requests",
+          "cma_ip_bytes",
+
+          "cma_endpoint_requests",
+          "cma_endpoint_bytes",
+
+          "cma_user_requests",
+          "cma_user_bytes",
         ].join(","),
       keepTop: parseInt(process.env.REDIS_SORTED_SET_KEEP_TOP) || 100,
       pruneFrequency:
