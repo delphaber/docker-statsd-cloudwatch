@@ -73,7 +73,7 @@
         ].join(","),
       keepTop: parseInt(process.env.REDIS_SORTED_SET_KEEP_TOP) || 100,
       pruneFrequency:
-        parseInt(process.env.REDIS_SORTED_SET_PRUNE_FREQUENCY) || 60000 * 30,
+        parseInt(process.env.REDIS_SORTED_SET_PRUNE_FREQUENCY) || 1000 * 60 * 60 * 4,
     },
   };
 })();
