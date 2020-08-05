@@ -1,4 +1,4 @@
-FROM phusion/baseimage
+FROM phusion/baseimage:18.04-1.0.0
 MAINTAINER Stefano Verna <s.verna@datocms.com>
 
 ENV DEBIAN_FRONTEND=noninteractive
