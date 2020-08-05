@@ -7,7 +7,7 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get -y update && apt-get -y -o Dpkg::Options::="--force-confold" upgrade
 RUN apt-get -y --force-yes install git nodejs
 
-RUN git clone https://github.com/etsy/statsd.git statsd
+RUN git clone -b v0.8.6 --single-branch https://github.com/etsy/statsd.git statsd
 ADD config.js ./statsd/config.js
 
 ADD backends/redisHash ./statsd/backends/redisHash
