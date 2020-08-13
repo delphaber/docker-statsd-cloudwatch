@@ -110,10 +110,10 @@ docker service inspect <ID>
 docker service update --env-add "FOO=bar" statsd
 
 # update image to the latest available in the registry
-docker pull stefanoverna/statsd-cloudwatch:1.0
+docker pull datocms/statsd-cloudwatch:1.0
 
 # change/update image
-docker service update --image stefanoverna/statsd-cloudwatch:1.0 statsd
+docker service update --image datocms/statsd-cloudwatch:1.0 statsd
 
 # remove service
 docker service rm statsd
